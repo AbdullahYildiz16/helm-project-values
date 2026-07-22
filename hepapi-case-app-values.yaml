@@ -17,6 +17,10 @@ serviceAccount:
   # Mapped from the serviceAccountName in your deployment
   name: "hepapi-case-minikube-service-account"
 
+container:
+  command: ["node"]
+  args: ["--env-file=/vault/secrets/.env", "server.js"]
+  
 podAnnotations:
   vault.hashicorp.com/agent-inject: "true"
   vault.hashicorp.com/role: "hepapi-case-role"
@@ -28,9 +32,6 @@ podAnnotations:
     {{- end }}
     {{- end -}}
 
-# Assuming your helm-base-common chart supports command/args overrides at the root
-command: ["node"]
-args: ["--env-file=/vault/secrets/.env", "server.js"]
 
 podSecurityContext: {}
 securityContext: {}
