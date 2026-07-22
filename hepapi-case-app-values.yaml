@@ -1,68 +1,88 @@
-replicaCount: 1
+replicaCount: 2
+
 image:
-  repository: managed-by-azuredevops
-  tag: managed-by-azuredevops
+  repository: localhost:5000/hepapi_case_project
+  tag: "0.0.21"
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
-  - name: dockerhub-secret
-nameOverride: "xxx"
-fullnameOverride: "xxx"
+  - name: image-registry-key
+
+nameOverride: "hepapi-case-app"
+fullnameOverride: "hepapi-case-app"
+
 serviceAccount:
   create: false
   annotations: {}
-  name: ""
-podAnnotations: {}
+  # Mapped from the serviceAccountName in your deployment
+  name: "hepapi-case-minikube-service-account"
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "hepapi-case-role"
+  vault.hashicorp.com/agent-inject-secret-.env: "secret/data/myapp/database"
+  vault.hashicorp.com/agent-inject-template-.env: |
+    {{- with secret "secret/data/myapp/database" -}}
+    {{- range $k, $v := .Data.data }}
+    {{ $k }}={{ $v }}
+    {{- end }}
+    {{- end -}}
+
+# Assuming your helm-base-common chart supports command/args overrides at the root
+command: ["node"]
+args: ["--env-file=/vault/secrets/.env", "server.js"]
+
 podSecurityContext: {}
 securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+
 service:
   type: ClusterIP
-  port: 80 
-  targetPort: 8080 
+  port: 3000 
+  targetPort: 3000 
+  
   livenessProbe:
-    enabled: false
+    enabled: true
     path: "/"
-    port: http
+    port: 3000
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    
   readinessProbe:
-    enabled: false
+    enabled: true
     path: "/"
-    port: http
+    port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 5
 
 ingress:
   enabled: true
   className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
-    - host: xxx.xxx.io
+    - host: hepapi-case-app.com
       paths:
         - path: /
           pathType: Prefix
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls: 
+    - secretName: hepapi-case-tls
+      hosts:
+        - hepapi-case-app.com
+
 resources:
   limits:
-    cpu: 250m
+    cpu: 1000m
     memory: 512Mi
   requests:
-    cpu: 25m
-    memory: 128Mi
+    cpu: 500m
+    memory: 256Mi
+
 autoscaling:
-  enabled: false
-  minReplicas: 3
+  enabled: true
+  minReplicas: 2
   maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 90
+  # targetMemoryUtilizationPercentage is omitted as it wasn't in your HPA manifest
+
 tolerations: []
 affinity: {}
-
-extraSecret:
-  name: xxx-extra-secret
-  data:
-    ConnectionStrings__XX: "aa"
