@@ -1,8 +1,8 @@
 replicaCount: 2
 
 image:
-  repository: localhost:5000/hepapi_case_project
-  tag: "0.0.26"
+  repository: host.minikube.internal:5000/hepapi_case_project
+  tag: "0.0.27"
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
