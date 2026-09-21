@@ -95,9 +95,3 @@ tolerations: []
 
 affinity: {}
 
-
-prometheusObjects:
-  - spec:
-      serviceMonitorSelector:
-        matchLabels:
-          release: kube-prometheus-stack
