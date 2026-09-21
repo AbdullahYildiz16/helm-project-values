@@ -3,7 +3,7 @@ hosts:
   - hepapi.com
 
 prometheusRules:
-  enabled: false
+  enabled: true
   expiringInfo:
     days: 90
     severity: info
