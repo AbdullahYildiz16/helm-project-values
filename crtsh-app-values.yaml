@@ -14,7 +14,7 @@ prometheusRules:
     severity: critical
 
 prometheus:
-  enabled: true
+  enabled: false
   scrapeInterval: 300s
   scrapeTimeout: 100s
 
