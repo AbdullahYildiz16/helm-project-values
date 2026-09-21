@@ -16,8 +16,8 @@ prometheusRules:
 
 
 prometheus:
-  scrapeInterval: 300s
-  scrapeTimeout: 100s
+  - scrapeInterval: 300s
+    scrapeTimeout: 100s
   
 
 replicaCount: 1
