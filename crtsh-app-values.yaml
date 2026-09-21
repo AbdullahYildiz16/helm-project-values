@@ -17,17 +17,6 @@ prometheus:
   scrapeInterval: 300s
   scrapeTimeout: 100s
 
-# Add this section to fulfill the expectations of _prom_label_helper.tpl
-# Replace 'release: prometheus-stack' with your actual Prometheus release label if different
-prometheusObjects:
-  - metadata:
-      name: prometheus-stack
-      namespace: monitoring
-    spec:
-      serviceMonitorSelector:
-        matchLabels:
-          release: prometheus-stack
-
 replicaCount: 1
 
 image:
