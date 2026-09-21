@@ -15,9 +15,9 @@ prometheusRules:
     severity: critical
 
 
-#prometheus:
- # scrapeInterval: 300s
-  #scrapeTimeout: 100s
+prometheus:
+  scrapeInterval: 300s
+  scrapeTimeout: 100s
   
 
 replicaCount: 1
